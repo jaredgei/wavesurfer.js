@@ -22,6 +22,8 @@ export type RegionsPluginEvents = BasePluginEvents & {
   'region-removed': [region: Region]
   /** When a region is clicked */
   'region-clicked': [region: Region, e: MouseEvent]
+  /** When a region is right clicked */
+  'region-right-clicked': [region: Region, e: MouseEvent]
   /** When a region is double-clicked */
   'region-double-clicked': [region: Region, e: MouseEvent]
   /** When playback enters a region */
@@ -41,6 +43,8 @@ export type RegionEvents = {
   play: []
   /** On mouse click */
   click: [event: MouseEvent]
+  /** On right click */
+  rightclick: [event: MouseEvent]
   /** Double click */
   dblclick: [event: MouseEvent]
   /** Mouse over */
@@ -241,6 +245,7 @@ class SingleRegion extends EventEmitter<RegionEvents> implements Region {
     if (!element) return
 
     element.addEventListener('click', (e) => this.emit('click', e))
+    element.addEventListener('contextmenu', (e) => this.emit('rightclick', e))
     element.addEventListener('mouseenter', (e) => this.emit('over', e))
     element.addEventListener('mouseleave', (e) => this.emit('leave', e))
     element.addEventListener('dblclick', (e) => this.emit('dblclick', e))
@@ -569,6 +574,10 @@ class RegionsPlugin extends BasePlugin<RegionsPluginEvents, RegionsPluginOptions
 
       region.on('click', (e) => {
         this.emit('region-clicked', region, e)
+      }),
+
+      region.on('rightclick', (e) => {
+        this.emit('region-right-clicked', region, e)
       }),
 
       region.on('dblclick', (e) => {
